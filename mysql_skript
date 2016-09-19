@@ -1,0 +1,8 @@
+
+
+echo "Please enter root user MySQL password!"
+read rootpasswd
+mysql -uroot -p${rootpasswd} -e "create database skript_databaas;"
+mysql -uroot -p${rootpasswd} -e "CREATE USER kasutaja4_skript@localhost IDENTIFIED BY 'qwerty';"
+mysql -uroot -p${rootpasswd} -e "GRANT SELECT  ON skript_databaas.* TO 'kasutaja4_skript'@'localhost';"
+
