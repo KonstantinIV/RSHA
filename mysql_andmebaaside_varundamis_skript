@@ -1,0 +1,30 @@
+#!/bin/bash
+
+k=$(date +"%F") 	  # Paneme muutuja sisse praegune kuupäev kujul yyyy-mm-dd
+a=$(date +"%Y")	 	  # Paneme muutuja sisse praegune aasta nt 2016
+kuu=$(date -d "$D" '+%m') # Paneme muutuja sisse praegune kuu nt 09
+pa=$(date '+%d')  	  # Paneme muutuja sisse praegune päev nt 26
+aeg=$(date +"%H-%M")	  # Paneme muutuja sisse praegune aeg nt 08-38 kus 08 on tund ja 38 on minutid
+parool="qwerty"		  # Paneme muutuja sisse parool, kui soovime käivitada skripti ilma, et skript küsiks parool
+
+			  # Loome kaust vastavalt tänase kuupäeva põhjal
+p=$(mkdir -p /$a/$kuu/$pa/$aeg)
+kataloog=$(pwd)
+
+			  # Käivitame tsükli, kus käsust saadud andmebaasidest tehaks varundus ja
+			  # kohe seejäerel varundatakse tehtud varukoopia
+			  # Tsükli sees oleva IF samuti kontrollib, et skript
+                          # ei looks ebavajalikud varundused andmebaasidest
+
+for i in $(mysql -B  -u root -p${parool} -e 'show databases;'); do
+	if [ "$i" != "Database" ] && [ "$i" != "information_schema" ] && [ "$i" != "performance_schema"  ]
+	then
+		cd /$a/$kuu/$pa/$aeg
+		mysqldump -u root -p${parool} $i > /$a/$kuu/$pa/$aeg/$k.$i.backup.sql  # Varundus
+                gzip  $k.$i.backup.sql   	                                       # Arhiiveering
+	fi
+done
+
+cd $kataloog
+
+
